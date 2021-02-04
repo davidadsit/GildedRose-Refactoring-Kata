@@ -1,9 +1,9 @@
-﻿using Xunit;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using ApprovalTests;
 using ApprovalTests.Reporters;
+using Xunit;
 
 namespace csharpcore
 {
@@ -13,14 +13,14 @@ namespace csharpcore
         [Fact]
         public void ThirtyDays()
         {
-            var fakeoutput = new StringBuilder();
-            Console.SetOut(new StringWriter(fakeoutput));
+            var output = new StringBuilder();
+
+            Console.SetOut(new StringWriter(output));
             Console.SetIn(new StringReader("a\n"));
 
-            Program.Main(new string[] { });
-            var output = fakeoutput.ToString();
+            Program.Main(Array.Empty<string>());
 
-            Approvals.Verify(output);
+            Approvals.Verify(output.ToString());
         }
     }
 }

@@ -67,8 +67,14 @@ namespace csharpcore
             Items.ForEach(item =>
             {
                 var updated = UpdateItem(item);
-                item.Quality = updated.Quality;
                 item.SellIn = updated.SellIn;
+
+                if (item.Name.Contains("Conjured"))
+                {
+                    updated = UpdateItem(updated);
+                }
+
+                item.Quality = updated.Quality;
             });
         }
     }

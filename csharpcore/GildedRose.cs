@@ -14,15 +14,12 @@ namespace csharpcore
 
         public Item UpdateItem(Item item)
         {
-            var quality = item.Quality;
-            var sellIn = item.SellIn - 1;
-
             return item.Name switch
             {
-                ItemNames.Sulfuras => new Item {Name = item.Name, Quality = 80, SellIn = item.SellIn},
-                ItemNames.Brie => new Item {Name = item.Name, Quality = CalculateNewQualityForBrie(quality, sellIn), SellIn = sellIn},
-                ItemNames.ConcertPasses => new Item {Name = item.Name, Quality = CalculateNewQualityForConcertPasses(quality, sellIn), SellIn = sellIn},
-                _ => new Item {Name = item.Name, Quality = CalculateNewQuality(quality, sellIn), SellIn = sellIn}
+                ItemNames.Sulfuras => new Item {Name = item.Name, SellIn = item.SellIn, Quality = 80},
+                ItemNames.Brie => new Item {Name = item.Name, SellIn = item.SellIn - 1, Quality = CalculateNewQualityForBrie(item.Quality, item.SellIn - 1)},
+                ItemNames.ConcertPasses => new Item {Name = item.Name, SellIn = item.SellIn - 1, Quality = CalculateNewQualityForConcertPasses(item.Quality, item.SellIn - 1)},
+                _ => new Item {Name = item.Name, SellIn = item.SellIn - 1, Quality = CalculateNewQuality(item.Quality, item.SellIn - 1)}
             };
         }
 
@@ -32,12 +29,7 @@ namespace csharpcore
             {
                 var updated = UpdateItem(item);
                 item.SellIn = updated.SellIn;
-
-                if (item.Name.Contains("Conjured"))
-                {
-                    updated = UpdateItem(updated);
-                }
-
+                updated = UpdateConjuredItemQualityAgain(updated);
                 item.Quality = updated.Quality;
             });
         }
@@ -73,6 +65,11 @@ namespace csharpcore
                 < 0 => 0,
                 _ => quality
             };
+        }
+
+        private Item UpdateConjuredItemQualityAgain(Item updated)
+        {
+            return updated.Name.Contains("Conjured") ? UpdateItem(updated) : updated;
         }
     }
 }

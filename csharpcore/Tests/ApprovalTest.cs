@@ -5,7 +5,7 @@ using ApprovalTests;
 using ApprovalTests.Reporters;
 using Xunit;
 
-namespace csharpcore
+namespace csharpcore.Tests
 {
     [UseReporter(typeof(DiffReporter))]
     public class ApprovalTest

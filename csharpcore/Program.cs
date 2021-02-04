@@ -19,7 +19,6 @@ namespace csharpcore
                 new Item {Name = ItemNames.ConcertPasses, SellIn = 15, Quality = 20},
                 new Item {Name = ItemNames.ConcertPasses, SellIn = 10, Quality = 49},
                 new Item {Name = ItemNames.ConcertPasses, SellIn = 5, Quality = 49},
-                // this conjured item does not work properly yet
                 new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
             };
 

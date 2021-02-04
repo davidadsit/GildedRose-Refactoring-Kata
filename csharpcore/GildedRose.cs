@@ -1,88 +1,75 @@
 ﻿using System.Collections.Generic;
+using ApprovalUtilities.Utilities;
 
 namespace csharpcore
 {
     public class GildedRose
     {
-        private readonly IList<Item> items;
+        private readonly IList<Item> Items;
 
-        public GildedRose(IList<Item> items)
+        public GildedRose(IList<Item> Items)
         {
-            this.items = items;
+            this.Items = Items;
+        }
+
+        public Item UpdateItem(Item item)
+        {
+            var quality = item.Quality;
+            var sellIn = item.SellIn - 1;
+
+            switch (item.Name)
+            {
+                case ItemNames.Sulfuras:
+                    return new Item {Name = ItemNames.Sulfuras, Quality = 80, SellIn = item.SellIn};
+                case ItemNames.Brie:
+                    quality++;
+                    if (sellIn < 0)
+                    {
+                        quality++;
+                    }
+
+                    break;
+                case ItemNames.ConcertPasses:
+                {
+                    quality++;
+                    if (sellIn < 10) quality++;
+                    if (sellIn < 5) quality++;
+                    if (sellIn < 0) quality = 0;
+                    break;
+                }
+                default:
+                {
+                    quality--;
+                    if (sellIn < 0)
+                    {
+                        quality--;
+                    }
+
+                    break;
+                }
+            }
+
+            if (quality < 0)
+            {
+                quality = 0;
+            }
+
+            if (quality > 50)
+            {
+                quality = 50;
+            }
+
+            return new Item {Name = item.Name, Quality = quality, SellIn = sellIn};
         }
 
         public void UpdateQuality()
         {
-            foreach (var item in items)
+            Items.ForEach(item =>
             {
-                if (item.Name == Items.Brie)
-                {
-                    if (item.Quality < 50)
-                    {
-                        item.Quality += 1;
-                    }
-                }
-                else if (item.Name == Items.ConcertPasses)
-                {
-                    if (item.Quality < 50)
-                    {
-                        item.Quality += 1;
-
-                        if (item.SellIn < 11 && item.Quality < 50)
-                        {
-                            item.Quality += 1;
-                        }
-
-                        if (item.SellIn < 6 && item.Quality < 50)
-                        {
-                            item.Quality += 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (item.Quality > 0 && item.Name != Items.Sulfuras)
-                    {
-                        item.Quality -= 1;
-                    }
-                }
-
-                if (item.Name != Items.Sulfuras)
-                {
-                    item.SellIn -= 1;
-                }
-
-                if (item.SellIn < 0)
-                {
-                    if (item.Name == Items.Brie)
-                    {
-                        if (item.Quality < 50)
-                        {
-                            item.Quality += 1;
-                        }
-                    }
-                    else
-                    {
-                        if (item.Name == Items.ConcertPasses)
-                        {
-                            item.Quality -= item.Quality;
-                        }
-                        else
-                        {
-                            if (item.Name == Items.Sulfuras)
-                            {
-                            }
-                            else
-                            {
-                                if (item.Quality > 0)
-                                {
-                                    item.Quality -= 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                var updated = UpdateItem(item);
+                item.Quality = updated.Quality;
+                item.SellIn = updated.SellIn;
+            });
         }
     }
 }

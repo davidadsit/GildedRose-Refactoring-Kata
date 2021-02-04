@@ -17,49 +17,13 @@ namespace csharpcore
             var quality = item.Quality;
             var sellIn = item.SellIn - 1;
 
-            switch (item.Name)
+            return item.Name switch
             {
-                case ItemNames.Sulfuras:
-                    return new Item {Name = ItemNames.Sulfuras, Quality = 80, SellIn = item.SellIn};
-                case ItemNames.Brie:
-                    quality++;
-                    if (sellIn < 0)
-                    {
-                        quality++;
-                    }
-
-                    break;
-                case ItemNames.ConcertPasses:
-                {
-                    quality++;
-                    if (sellIn < 10) quality++;
-                    if (sellIn < 5) quality++;
-                    if (sellIn < 0) quality = 0;
-                    break;
-                }
-                default:
-                {
-                    quality--;
-                    if (sellIn < 0)
-                    {
-                        quality--;
-                    }
-
-                    break;
-                }
-            }
-
-            if (quality < 0)
-            {
-                quality = 0;
-            }
-
-            if (quality > 50)
-            {
-                quality = 50;
-            }
-
-            return new Item {Name = item.Name, Quality = quality, SellIn = sellIn};
+                ItemNames.Sulfuras => new Item {Name = item.Name, Quality = 80, SellIn = item.SellIn},
+                ItemNames.Brie => new Item {Name = item.Name, Quality = CalculateNewQualityForBrie(quality, sellIn), SellIn = sellIn},
+                ItemNames.ConcertPasses => new Item {Name = item.Name, Quality = CalculateNewQualityForConcertPasses(quality, sellIn), SellIn = sellIn},
+                _ => new Item {Name = item.Name, Quality = CalculateNewQuality(quality, sellIn), SellIn = sellIn}
+            };
         }
 
         public void UpdateQuality()
@@ -76,6 +40,39 @@ namespace csharpcore
 
                 item.Quality = updated.Quality;
             });
+        }
+
+        private static int CalculateNewQuality(int quality, int sellIn)
+        {
+            quality--;
+            if (sellIn < 0) quality--;
+            return EnforceQualityConstraints(quality);
+        }
+
+        private static int CalculateNewQualityForBrie(int quality, int sellIn)
+        {
+            quality++;
+            if (sellIn < 0) quality++;
+            return EnforceQualityConstraints(quality);
+        }
+
+        private static int CalculateNewQualityForConcertPasses(int quality, int sellIn)
+        {
+            quality++;
+            if (sellIn < 10) quality++;
+            if (sellIn < 5) quality++;
+            if (sellIn < 0) quality = 0;
+            return EnforceQualityConstraints(quality);
+        }
+
+        private static int EnforceQualityConstraints(int quality)
+        {
+            return quality switch
+            {
+                > 50 => 50,
+                < 0 => 0,
+                _ => quality
+            };
         }
     }
 }
